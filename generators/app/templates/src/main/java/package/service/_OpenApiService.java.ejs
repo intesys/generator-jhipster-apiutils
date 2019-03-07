@@ -1,0 +1,132 @@
+package <%=packageName%>.service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.github.jhipster.config.JHipsterConstants;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+import springfox.documentation.spring.web.DocumentationCache;
+import springfox.documentation.swagger.web.InMemorySwaggerResourcesProvider;
+import springfox.documentation.swagger.web.SwaggerResource;
+import springfox.documentation.swagger.web.SwaggerResourcesProvider;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+@Component
+@Primary
+@Profile(JHipsterConstants.SPRING_PROFILE_SWAGGER)
+public class OpenApiService extends InMemorySwaggerResourcesProvider implements SwaggerResourcesProvider {
+
+    private Logger logger = LoggerFactory.getLogger(OpenApiService.class);
+
+    private final String basePath;
+
+    public OpenApiService(Environment environment, DocumentationCache documentationCache) {
+        super(environment, documentationCache);
+        basePath = environment.getProperty("openapi.myappAPSBackend.base-path", "/api/public/");
+    }
+
+    /**
+     * Overrides springfox docket endpints list in order to add the endpoint for the static yml file to the /swagger-resources list.
+     * @return the updated swagger endpoint list
+     */
+    @Override
+    public List<SwaggerResource> get() {
+        try {
+            List<SwaggerResource> swaggerResources = new LinkedList<>();
+
+            SwaggerResource swaggerResource = new SwaggerResource();
+            swaggerResource.setName("openapi");
+            swaggerResource.setUrl(basePath + "api.yml");
+            swaggerResource.setLocation(basePath + "api.yml");
+            swaggerResource.setSwaggerVersion(Definition.INSTANCE.getSpecVersion());
+            swaggerResources.add(swaggerResource);
+
+            swaggerResources.addAll(super.get());
+            return swaggerResources;
+        } catch (IOException e) {
+            logger.error("Error while getting openapi file", e);
+            return super.get();
+        }
+    }
+
+    /**
+     * A wrapper for the api.yml file
+     */
+    public static class Definition {
+
+        public static final Definition INSTANCE = new Definition();
+
+        private final ObjectMapper ymlObjectMapper = new ObjectMapper(new YAMLFactory());
+        private final JsonNode ymlJsonNode;
+
+        private Definition() {
+            try {
+                ClassPathResource classPathResource = new ClassPathResource("swagger/api.yml");
+                byte[] ymlContent = IOUtils.toByteArray(classPathResource.getInputStream());
+                ymlJsonNode = ymlObjectMapper.readTree(ymlContent);
+            } catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Returns the yml file content. Replaces servers list to add the endpoint passed as parameter
+         * @param apiEndpoint the api endpoint to be inserted into the yml file
+         * @return the content of the yml, with the dynamically replaced server list
+         * @throws IOException
+         */
+        public byte[] getContent(String apiEndpoint) throws IOException {
+            ArrayNode servers = (ArrayNode) ymlJsonNode.get("servers");
+            if(servers != null){
+                //remove servers (if any)
+                servers.removeAll();
+            } else {
+                servers = ymlObjectMapper.createArrayNode();
+            }
+
+            ObjectNode objectNode = ymlObjectMapper.createObjectNode();
+            objectNode.put("url", apiEndpoint);
+            servers.add(objectNode);
+
+            return ymlObjectMapper.writeValueAsBytes(ymlJsonNode);
+        }
+
+
+        /**
+         * Returns the api version written into the api.yml file
+         * @return the api version
+         * @throws IOException
+         */
+        public String getApiVersion() throws IOException {
+            return ymlJsonNode.get("info").get("version").textValue();
+        }
+
+        /**
+         * Openapi version (swagger 2.0, openapi 3.0)
+         * @return the spec version (swagger/openapi)
+         * @throws IOException
+         */
+        private String getSpecVersion() throws IOException {
+            if(ymlJsonNode.has("openapi")) {
+                return ymlJsonNode.get("openapi").textValue();
+            } else if(ymlJsonNode.has("swagger")){
+                return ymlJsonNode.get("swagger").textValue();
+            } else {
+                return null;
+            }
+        }
+    }
+
+}

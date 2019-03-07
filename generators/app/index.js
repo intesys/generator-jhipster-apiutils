@@ -40,9 +40,15 @@ module.exports = class extends BaseGenerator {
         const prompts = [
             {
                 type: 'input',
-                name: 'message',
-                message: 'Please put something',
-                default: 'hello world!'
+                name: 'openapiFile',
+                message: 'What what is the name of the openapi file in the swagger directory?',
+                default: 'api.yml'
+            },
+            {
+                type: 'input',
+                name: 'openapiPath',
+                message: 'Which api base path is used for openapi?',
+                default: '/api/public'
             }
         ];
 
@@ -72,6 +78,8 @@ module.exports = class extends BaseGenerator {
         this.clientFramework = this.jhipsterAppConfig.clientFramework;
         this.clientPackageManager = this.jhipsterAppConfig.clientPackageManager;
         this.buildTool = this.jhipsterAppConfig.buildTool;
+        this.jhipsterVersion = this.jhipsterAppConfig.jhipsterVersion;
+        this.swaggerEnabled = this.jhipsterAppConfig.enableSwaggerCodegen;
 
         // use function in generator-base.js from generator-jhipster
         this.angularAppName = this.getAngularAppName();
@@ -91,6 +99,8 @@ module.exports = class extends BaseGenerator {
         this.log(`clientFramework=${this.clientFramework}`);
         this.log(`clientPackageManager=${this.clientPackageManager}`);
         this.log(`buildTool=${this.buildTool}`);
+        this.log(`version=${this.jhipsterVersion}`);
+        this.log(`swaggerCodegen=${this.swaggerEnabled}`);
 
         this.log('\n--- some function ---');
         this.log(`angularAppName=${this.angularAppName}`);
@@ -104,18 +114,34 @@ module.exports = class extends BaseGenerator {
         this.log(`\nmessage=${this.message}`);
         this.log('------\n');
 
-        if (this.clientFramework === 'angular1') {
-            this.template('dummy.txt', 'dummy-angular1.txt');
-        }
-        if (this.clientFramework === 'angularX' || this.clientFramework === 'angular2') {
-            this.template('dummy.txt', 'dummy-angularX.txt');
-        }
+        // if (this.clientFramework === 'angular1') {
+        //     this.template('dummy.txt', 'dummy-angular1.txt');
+        // }
+        // if (this.clientFramework === 'angularX' || this.clientFramework === 'angular2') {
+        //     this.template('dummy.txt', 'dummy-angularX.txt');
+        // }
+        // if (this.buildTool === 'maven') {
+        //     this.template('dummy.txt', 'dummy-maven.txt');
+        // }
+        // if (this.buildTool === 'gradle') {
+        //     this.template('dummy.txt', 'dummy-gradle.txt');
+        // }
+
+        this.template(
+            `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/web/_OpenApiController.java.ejs`,
+            `${javaDir}web/OpenApiController.java`
+        )
+        this.template(
+            `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/service/_OpenApiService.java.ejs`,
+            `${javaDir}service/OpenApiService.java`
+        )
+        
         if (this.buildTool === 'maven') {
-            this.template('dummy.txt', 'dummy-maven.txt');
+            this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+        } else if (this.buildTool === 'gradle') {
+            this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
         }
-        if (this.buildTool === 'gradle') {
-            this.template('dummy.txt', 'dummy-gradle.txt');
-        }
+
     }
 
     install() {
