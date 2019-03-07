@@ -136,7 +136,7 @@ module.exports = class extends BaseGenerator {
             this.log(logMsg);
         } else {
             this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
-            this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui-dist']);
+            this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
             this.installDependencies(installConfig);
         }
     }
