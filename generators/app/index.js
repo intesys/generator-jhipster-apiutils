@@ -91,43 +91,7 @@ module.exports = class extends BaseGenerator {
         const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
         const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        // variable from questions
-        this.message = this.props.message;
-
-        // show all variables
-        this.log('\n--- some config read from config ---');
-        this.log(`baseName=${this.baseName}`);
-        this.log(`packageName=${this.packageName}`);
-        this.log(`clientFramework=${this.clientFramework}`);
-        this.log(`clientPackageManager=${this.clientPackageManager}`);
-        this.log(`buildTool=${this.buildTool}`);
-        this.log(`version=${this.jhipsterVersion}`);
-        this.log(`swaggerCodegen=${this.swaggerEnabled}`);
-
-        this.log('\n--- some function ---');
-        this.log(`angularAppName=${this.angularAppName}`);
-
-        this.log('\n--- some const ---');
-        this.log(`javaDir=${javaDir}`);
-        this.log(`resourceDir=${resourceDir}`);
-        this.log(`webappDir=${webappDir}`);
-
-        this.log('\n--- variables from questions ---');
-        this.log(`\nmessage=${this.message}`);
-        this.log('------\n');
-
-        // if (this.clientFramework === 'angular1') {
-        //     this.template('dummy.txt', 'dummy-angular1.txt');
-        // }
-        // if (this.clientFramework === 'angularX' || this.clientFramework === 'angular2') {
-        //     this.template('dummy.txt', 'dummy-angularX.txt');
-        // }
-        // if (this.buildTool === 'maven') {
-        //     this.template('dummy.txt', 'dummy-maven.txt');
-        // }
-        // if (this.buildTool === 'gradle') {
-        //     this.template('dummy.txt', 'dummy-gradle.txt');
-        // }
+        this.log(`\ngenerating api first files for ${this.props.openApiFile} exposed on public path ${this.props.openApiPath}\n`);
 
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/web/_OpenApiController.java.ejs`,
@@ -171,6 +135,7 @@ module.exports = class extends BaseGenerator {
         if (this.options['skip-install']) {
             this.log(logMsg);
         } else {
+            this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
             this.installDependencies(installConfig);
         }
     }
