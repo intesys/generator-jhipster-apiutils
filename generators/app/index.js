@@ -40,15 +40,17 @@ module.exports = class extends BaseGenerator {
         const prompts = [
             {
                 type: 'input',
-                name: 'openapiFile',
+                name: 'openApiFile',
                 message: 'What what is the name of the openapi file in the swagger directory?',
-                default: 'api.yml'
+                default: 'api.yml',
+                store: true
             },
             {
                 type: 'input',
-                name: 'openapiPath',
+                name: 'openApiPath',
                 message: 'Which api base path is used for openapi?',
-                default: '/api/public'
+                default: '/api/public',
+                store: true
             }
         ];
 
