@@ -101,6 +101,17 @@ module.exports = class extends BaseGenerator {
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/service/_OpenApiService.java.ejs`,
             `${javaDir}service/OpenApiService.java`
         )
+
+        this.template(
+            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
+            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
+        )
+
+
+        this.template(
+            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
+            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
+        )
         
         if (this.buildTool === 'maven') {
             this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
