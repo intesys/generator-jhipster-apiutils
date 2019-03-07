@@ -48,8 +48,8 @@ public class OpenApiService extends InMemorySwaggerResourcesProvider implements 
 
             SwaggerResource swaggerResource = new SwaggerResource();
             swaggerResource.setName("openapi");
-            swaggerResource.setUrl(basePath + "<%=props.openApiFile%>");
-            swaggerResource.setLocation(basePath + "<%=props.openApiFile%>");
+            swaggerResource.setUrl(basePath + "/<%=props.openApiFile%>");
+            swaggerResource.setLocation(basePath + "/<%=props.openApiFile%>");
             swaggerResource.setSwaggerVersion(Definition.INSTANCE.getSpecVersion());
             swaggerResources.add(swaggerResource);
 

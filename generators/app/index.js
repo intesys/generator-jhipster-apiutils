@@ -91,6 +91,13 @@ module.exports = class extends BaseGenerator {
         const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
         const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
+        if (this.enableTranslation === undefined) {
+            this.enableTranslation = true;
+        }
+
+        this.MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
+
+        this.log(`enable translation ${this.enableTranslation}`);
         this.log(`\ngenerating api first files for ${this.props.openApiFile} exposed on public path ${this.props.openApiPath}\n`);
 
         this.template(
@@ -102,21 +109,35 @@ module.exports = class extends BaseGenerator {
             `${javaDir}service/OpenApiService.java`
         )
 
+        if (this.buildTool === 'maven') {
+            this.addMavenProperty("jackson.version", "2.9.8");
+            this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+        } else if (this.buildTool === 'gradle') {
+            this.addGradleProperty("jackson.version", "2.9.8");
+            this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+        }
+
+        //swagger ui, only if client enabled
         this.template(
             `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
             `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
         )
 
-
         this.template(
             `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
             `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
         )
-        
-        if (this.buildTool === 'maven') {
-            this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
-        } else if (this.buildTool === 'gradle') {
-            this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+
+        if(this.clientFramework === 'angularX') {
+            this.template(
+                `angular/webpack/webpack-common.js.ext.ejs`,
+                `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+            )
+        } else if(this.clientFramework === 'react') {
+            this.template(
+                `react/webpack-common.js.ext.ejs`,
+                `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+            )
         }
 
     }
