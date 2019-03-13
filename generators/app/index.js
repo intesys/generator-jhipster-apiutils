@@ -54,6 +54,15 @@ module.exports = class extends BaseGenerator {
             }
         ];
 
+        if(this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway') {
+            prompts.push({
+                type: 'confirm',
+                name: 'swaggerUi3',
+                message: 'Do you want to upgrade swagger UI to version 3?',
+                default: false,
+            })
+        }
+
         const done = this.async();
         this.prompt(prompts).then((props) => {
             this.props = props;
@@ -88,16 +97,8 @@ module.exports = class extends BaseGenerator {
 
         // use constants from generator-constants.js
         const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
-        const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
         const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        if (this.enableTranslation === undefined) {
-            this.enableTranslation = true;
-        }
-
-        this.MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
-
-        this.log(`enable translation ${this.enableTranslation}`);
         this.log(`\ngenerating api first files for ${this.props.openApiFile} exposed on public path ${this.props.openApiPath}\n`);
 
         this.template(
@@ -117,29 +118,38 @@ module.exports = class extends BaseGenerator {
             this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
         }
 
-        //swagger ui, only if client enabled
-        this.template(
-            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
-            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
-        )
+        if(this.props.swaggerUi3){
 
-        this.template(
-            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
-            `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
-        )
+            //settings vars needed by webpack-common.js template
+            if (this.enableTranslation === undefined) {
+                this.enableTranslation = true;
+            }
+            this.MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        if(this.clientFramework === 'angularX') {
             this.template(
-                `angular/webpack/webpack-common.js.ext.ejs`,
-                `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+                `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
+                `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
             )
-        } else if(this.clientFramework === 'react') {
+    
             this.template(
-                `react/webpack-common.js.ext.ejs`,
-                `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+                `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
+                `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
             )
+    
+            if(this.clientFramework === 'angularX') {
+                this.template(
+                    `angular/webpack/webpack-common.js.ext.ejs`,
+                    `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+                )
+            } else if(this.clientFramework === 'react') {
+                this.template(
+                    `react/webpack-common.js.ext.ejs`,
+                    `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
+                )
+            }
+    
         }
-
+       
     }
 
     install() {
@@ -164,11 +174,30 @@ module.exports = class extends BaseGenerator {
             yarn: this.clientPackageManager === 'yarn',
             callback: injectDependenciesAndConstants
         };
+
+        const packageJson = require(this.destinationPath("package.json"))
+        const installAxios = !packageJson.dependencies.hasOwnProperty("axios")
+        
+        if(this.props.swaggerUi3){
+            if(installConfig.npm){
+                if(installAxios){
+                    this.spawnCommand('npm', ['install', '--save-dev', 'axios']);
+                }
+                this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
+                this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
+            } else if (installConfig.yarn){
+                if(installAxios){
+                    this.spawnCommand('yarn', ['install', '--save-dev', 'axios']);
+                }
+                this.spawnCommand('yarn', ['install', '--save', 'swagger-ui-dist']);
+                this.spawnCommand('yarn', ['uninstall', '--save', 'swagger-ui']);
+            }
+        }
+        
+
         if (this.options['skip-install']) {
             this.log(logMsg);
         } else {
-            this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
-            this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
             this.installDependencies(installConfig);
         }
     }
