@@ -26,18 +26,24 @@ import <%=packageName%>.service.OpenApiService;
 @Profile(JHipsterConstants.SPRING_PROFILE_SWAGGER)
 public class OpenApiController {
 
+    private final OpenApiService openApiService;
+
+    public OpenApiController(OpenApiService openApiService) {
+        this.openApiService = openApiService;
+    }
+
     @GetMapping(value = "/<%=props.openApiFile%>", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<byte[]> getApis(HttpServletRequest httpServletRequest) throws IOException {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/hal+json");
+        headers.add("Content-Type", "application/application+json");
         String apiEndpoint = httpServletRequest.getRequestURL().toString()
             .replace("/<%=props.openApiFile%>", "");
-        return new ResponseEntity<>(OpenApiService.Definition.INSTANCE.getContent(apiEndpoint), headers, HttpStatus.OK);
+        return new ResponseEntity<>(openApiService.getContent(apiEndpoint), headers, HttpStatus.OK);
     }
 
     @GetMapping(value = "/version", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> getApiVersion() throws IOException {
-        return ResponseEntity.ok(Collections.singletonMap("version", OpenApiService.Definition.INSTANCE.getApiVersion()));
+        return ResponseEntity.ok(Collections.singletonMap("version", openApiService.getApiVersion()));
     }
 
 }

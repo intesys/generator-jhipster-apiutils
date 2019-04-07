@@ -54,11 +54,21 @@ module.exports = class extends BaseGenerator {
             }
         ];
 
+        this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
+        if(this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka'){
+            prompts.push({
+                type: 'confirm',
+                name: 'addServiceDiscoveryTag',
+                message: 'Do you want add an api version tag for service discovery?',
+                default: false,
+            })
+        }
+
         if(this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway') {
             prompts.push({
                 type: 'confirm',
                 name: 'swaggerUi3',
-                message: 'Do you want to upgrade swagger UI to version 3?',
+                message: 'Do you want to upgrade swagger UI to version 3? (Beta - works only with JWT auth)',
                 default: false,
             })
         }
@@ -92,6 +102,7 @@ module.exports = class extends BaseGenerator {
         this.jhipsterVersion = this.jhipsterAppConfig.jhipsterVersion;
         this.swaggerEnabled = this.jhipsterAppConfig.enableSwaggerCodegen;
 
+
         // use function in generator-base.js from generator-jhipster
         this.angularAppName = this.getAngularAppName();
 
@@ -109,6 +120,10 @@ module.exports = class extends BaseGenerator {
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/service/_OpenApiService.java.ejs`,
             `${javaDir}service/OpenApiService.java`
         )
+        this.template(
+            `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstResourceProvider.java.ejs`,
+            `${javaDir}config/apidocs/ApiFirstResourceProvider.java`
+        )
 
         if (this.buildTool === 'maven') {
             this.addMavenProperty("jackson.version", "2.9.8");
@@ -116,6 +131,17 @@ module.exports = class extends BaseGenerator {
         } else if (this.buildTool === 'gradle') {
             this.addGradleProperty("jackson.version", "2.9.8");
             this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+        }
+
+        if(this.props.addServiceDiscoveryTag){
+            if(this.serviceDiscoveryType === 'consul'){
+                this.template(
+                    `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstConsulCustomizer.java.ejs`,
+                    `${javaDir}config/apidocs/ApiFirstConsulCustomizer.java`
+                )
+            } else if(this.serviceDiscoveryType == 'eureka'){
+                //todo
+            }
         }
 
         if(this.props.swaggerUi3){
@@ -176,19 +202,12 @@ module.exports = class extends BaseGenerator {
         };
 
         const packageJson = require(this.destinationPath("package.json"))
-        const installAxios = !packageJson.dependencies.hasOwnProperty("axios")
         
         if(this.props.swaggerUi3){
             if(installConfig.npm){
-                if(installAxios){
-                    this.spawnCommand('npm', ['install', '--save-dev', 'axios']);
-                }
                 this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
                 this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
             } else if (installConfig.yarn){
-                if(installAxios){
-                    this.spawnCommand('yarn', ['install', '--save-dev', 'axios']);
-                }
                 this.spawnCommand('yarn', ['install', '--save', 'swagger-ui-dist']);
                 this.spawnCommand('yarn', ['uninstall', '--save', 'swagger-ui']);
             }
