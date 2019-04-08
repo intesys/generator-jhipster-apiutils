@@ -140,7 +140,10 @@ module.exports = class extends BaseGenerator {
                     `${javaDir}config/apidocs/ApiFirstConsulCustomizer.java`
                 )
             } else if(this.serviceDiscoveryType == 'eureka'){
-                //todo
+                this.template(
+                    `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstEurekaCustomizer.java.ejs`,
+                    `${javaDir}config/apidocs/ApiFirstEurekaCustomizer.java`
+                )
             }
         }
 

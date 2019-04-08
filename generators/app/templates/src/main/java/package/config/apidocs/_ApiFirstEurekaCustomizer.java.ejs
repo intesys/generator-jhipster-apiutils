@@ -1,0 +1,21 @@
+package <%=packageName%>.config.apidocs;
+
+import com.netflix.appinfo.EurekaInstanceConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
+
+import <%=packageName%>.service.OpenApiService;
+
+@Configuration
+public class ApiFirstEurekaCustomizer {
+
+    @Autowired
+    EurekaInstanceConfig eurekaInstanceConfig;
+
+    @PostConstruct
+    public void postConstruct(OpenApiService openApiService){
+        eurekaInstanceConfig.getMetadataMap().put("api", openApiService.getApiVersion());
+    }
+}
