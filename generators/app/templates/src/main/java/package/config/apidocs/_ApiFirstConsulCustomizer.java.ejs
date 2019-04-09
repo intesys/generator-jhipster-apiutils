@@ -1,6 +1,6 @@
 package <%=packageName%>.config.apidocs;
 
-
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistrationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ public class ApiFirstConsulCustomizer {
 
     @Bean
     @Primary
-    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService,
+    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService, BuildProperties buildProperties,
                                                                   @Value("${spring.application.name}") String appName) {
         return registration -> {
             List<String> tags = registration.getService().getTags();
@@ -27,8 +27,11 @@ public class ApiFirstConsulCustomizer {
             tags.add("api=" + openApiService.getApiVersion());
 
             //fabio upstream rules
-            String apiFirstPath = "/" + appName + "/" + openApiService.getApiVersion();
+            String apiFirstPath = "/" + appName + "/api/v" + openApiService.getApiVersion();
             tags.add(String.format("urlprefix-%s strip=%s", apiFirstPath, apiFirstPath));
+
+            String buidVersionPath = "/" + appName + "/v" + buildProperties.getVersion();
+            tags.add(String.format("urlprefix-%s strip=%s", buidVersionPath, buidVersionPath));
         };
     }
 }
