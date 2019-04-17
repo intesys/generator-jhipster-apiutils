@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const packagejs = require('../../package.json');
 const semver = require('semver');
+const _ = require('lodash');
 const BaseGenerator = require('generator-jhipster/generators/generator-base');
 const jhipsterConstants = require('generator-jhipster/generators/generator-constants');
 
@@ -40,15 +41,8 @@ module.exports = class extends BaseGenerator {
         const prompts = [
             {
                 type: 'input',
-                name: 'openApiFile',
-                message: 'What what is the name of the openapi file in the swagger directory?',
-                default: 'api.yml',
-                store: true
-            },
-            {
-                type: 'input',
                 name: 'openApiPath',
-                message: 'Which api base path is used for openapi?',
+                message: 'Which api base path is used for openapi endpoint?',
                 default: '/api/public',
                 store: true
             }
@@ -84,13 +78,11 @@ module.exports = class extends BaseGenerator {
 
     writing() {
         // function to use directly template
-        this.template = function (source, destination) {
-            this.fs.copyTpl(
-                this.templatePath(source),
-                this.destinationPath(destination),
-                this
-            );
-        };
+        this.template = (source, destination) => this.fs.copyTpl(
+            this.templatePath(source),
+            this.destinationPath(destination),
+            this
+        );
 
         // read config from .yo-rc.json
         this.baseName = this.jhipsterAppConfig.baseName;
@@ -108,9 +100,11 @@ module.exports = class extends BaseGenerator {
 
         // use constants from generator-constants.js
         const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
-        const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        this.log(`\ngenerating api first files for ${this.props.openApiFile} exposed on public path ${this.props.openApiPath}\n`);
+        this.dasherizedBaseName = _.kebabCase(this.baseName);
+        this.openApiBasePathProperty = `\$\{openapi.${this.dasherizedBaseName}.base-path:${this.props.openApiPath}\}`;
+
+        this.log(`\ngenerating api first files for api.yml exposed on public path ${this.props.openApiPath} or set on property ${this.openApiBasePathProperty}\n`);
 
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/web/_OpenApiController.java.ejs`,
@@ -128,9 +122,14 @@ module.exports = class extends BaseGenerator {
         if (this.buildTool === 'maven') {
             this.addMavenProperty("jackson.version", "2.9.8");
             this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+            this.rewriteFile('pom.xml',
+            '<delegatePattern>true</delegatePattern>', 
+            `                                    <title>${this.dasherizedBaseName}</title>`
+            );
         } else if (this.buildTool === 'gradle') {
             this.addGradleProperty("jackson.version", "2.9.8");
             this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+            this.replaceContent('gradle/swagger.gradle', `delegatePattern: "true"`, `delegatePattern: "true", title: "${this.dasherizedBaseName}"`);
         }
 
         if(this.props.addServiceDiscoveryTag){

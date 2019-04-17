@@ -1,6 +1,7 @@
 package <%=packageName%>.config.apidocs;
 
 import io.github.jhipster.config.JHipsterConstants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
@@ -24,10 +25,10 @@ public class ApiFirstResourceProvider extends InMemorySwaggerResourcesProvider i
     private final String basePath;
 
     public ApiFirstResourceProvider(Environment environment, DocumentationCache documentationCache,
-                                    OpenApiService openApiService) {
+                                    OpenApiService openApiService, @Value("<%=openApiBasePathProperty%>") String basePath) {
         super(environment, documentationCache);
         this.openApiService = openApiService;
-        basePath = "<%=props.openApiPath%>";
+        this.basePath = basePath;
     }
 
     /**
@@ -40,8 +41,8 @@ public class ApiFirstResourceProvider extends InMemorySwaggerResourcesProvider i
 
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName("openapi");
-        swaggerResource.setUrl(basePath + "/<%=props.openApiFile%>");
-        swaggerResource.setLocation(basePath + "/<%=props.openApiFile%>");
+        swaggerResource.setUrl(basePath + "/api.yml");
+        swaggerResource.setLocation(basePath + "/api.yml");
         swaggerResource.setSwaggerVersion(openApiService.getSpecVersion());
         swaggerResources.add(swaggerResource);
 

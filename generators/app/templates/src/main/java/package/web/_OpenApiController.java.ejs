@@ -22,7 +22,7 @@ import <%=packageName%>.service.OpenApiService;
  * This allows to have the exposed yml file exactly equals as the one in the yml file and avoiding springfox to generate the documentation.
  */
 @Controller
-@RequestMapping("<%=props.openApiPath%>")
+@RequestMapping("<%=openApiBasePathProperty%>")
 @Profile(JHipsterConstants.SPRING_PROFILE_SWAGGER)
 public class OpenApiController {
 
@@ -32,12 +32,12 @@ public class OpenApiController {
         this.openApiService = openApiService;
     }
 
-    @GetMapping(value = "/<%=props.openApiFile%>", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "/api.yml", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<byte[]> getApis(HttpServletRequest httpServletRequest) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/application+json");
         String apiEndpoint = httpServletRequest.getRequestURL().toString()
-            .replace("/<%=props.openApiFile%>", "");
+            .replace("/api.yml", "");
         return new ResponseEntity<>(openApiService.getContent(apiEndpoint), headers, HttpStatus.OK);
     }
 
