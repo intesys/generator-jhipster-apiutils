@@ -37,43 +37,72 @@ module.exports = class extends BaseGenerator {
         };
     }
 
-    prompting() {
-        const prompts = [
-            {
-                type: 'input',
-                name: 'openApiPath',
-                message: 'Which api base path is used for openapi endpoint?',
-                default: '/api/public',
-                store: true
+    get prompting() {
+        return {
+            askOpenApiPath: function askOpenApiPath() {
+                const done = this.async();
+                
+                this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
+                const prompts = [{
+                        type: 'input',
+                        name: 'openApiPath',
+                        message: 'Which api base path is used for openapi endpoint?',
+                        default: '/api/public',
+                        store: true
+                    },
+                    {
+                        when: this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka',
+                        type: 'confirm',
+                        name: 'addServiceDiscoveryTag',
+                        message: 'Do you want add version tags for service discovery?',
+                        default: false,
+                    }
+                ];
+
+                
+                this.prompt(prompts).then((props) => {
+                    this.openApiPath = props.openApiPath;
+                    this.addServiceDiscoveryTag = props.addServiceDiscoveryTag;
+                    done();
+                });
+            },
+
+            askFabioTags : function askFabioTags() {
+                const done = this.async();
+                
+                this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
+                console.log(`${this.serviceDiscoveryType}`)
+                const prompts = [{
+                    when: this.serviceDiscoveryType === 'consul' || this.addServiceDiscoveryTag === true,
+                    type: 'confirm',
+                    name: 'addFabioTags',
+                    message: 'Do you want add urlprefix tags for Fabio service discovery?',
+                    default: false,
+                }]
+                
+                this.prompt(prompts).then((props) => {
+                    this.addFabioTags = props.addFabioTags;
+                    done();
+                });
+            },
+
+            askSwaggerUIUpgrade : function askSwaggerUIUpgrade() {
+                const done = this.async();
+
+                const prompts = [{
+                    when: this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway',
+                    type: 'confirm',
+                    name: 'swaggerUi3',
+                    message: 'Do you want to upgrade swagger UI to version 3? (Beta - works only with JWT auth)',
+                    default: false,
+                }]
+                
+                this.prompt(prompts).then((props) => {
+                    this.swaggerUi3 = props.swaggerUi3;
+                    done();
+                });
             }
-        ];
-
-        this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
-        if(this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka'){
-            prompts.push({
-                type: 'confirm',
-                name: 'addServiceDiscoveryTag',
-                message: 'Do you want add an api version tag for service discovery?',
-                default: false,
-            })
         }
-
-        if(this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway') {
-            prompts.push({
-                type: 'confirm',
-                name: 'swaggerUi3',
-                message: 'Do you want to upgrade swagger UI to version 3? (Beta - works only with JWT auth)',
-                default: false,
-            })
-        }
-
-        const done = this.async();
-        this.prompt(prompts).then((props) => {
-            this.props = props;
-            // To access props later use this.props.someOption;
-
-            done();
-        });
     }
 
     writing() {
@@ -102,9 +131,9 @@ module.exports = class extends BaseGenerator {
         const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
 
         this.dasherizedBaseName = _.kebabCase(this.baseName);
-        this.openApiBasePathProperty = `\$\{openapi.${this.dasherizedBaseName}.base-path:${this.props.openApiPath}\}`;
+        this.openApiBasePathProperty = `\$\{openapi.${this.dasherizedBaseName}.base-path:${this.openApiPath}\}`;
 
-        this.log(`\ngenerating api first files for api.yml exposed on public path ${this.props.openApiPath} or set on property ${this.openApiBasePathProperty}\n`);
+        this.log(`\ngenerating api first files for api.yml exposed on public path ${this.openApiPath} or set on property ${this.openApiBasePathProperty}\n`);
 
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/web/_OpenApiController.java.ejs`,
@@ -123,8 +152,8 @@ module.exports = class extends BaseGenerator {
             this.addMavenProperty("jackson.version", "2.9.8");
             this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
             this.rewriteFile('pom.xml',
-            '<delegatePattern>true</delegatePattern>', 
-            `                                    <title>${this.dasherizedBaseName}</title>`
+                '<delegatePattern>true</delegatePattern>',
+                `                                    <title>${this.dasherizedBaseName}</title>`
             );
         } else if (this.buildTool === 'gradle') {
             this.addGradleProperty("jackson.version", "2.9.8");
@@ -132,8 +161,8 @@ module.exports = class extends BaseGenerator {
             this.replaceContent('gradle/swagger.gradle', `delegatePattern: "true"`, `delegatePattern: "true", title: "${this.dasherizedBaseName}"`);
         }
 
-        if(this.props.addServiceDiscoveryTag){
-            if(this.serviceDiscoveryType === 'consul'){
+        if (this.addServiceDiscoveryTag) {
+            if (this.serviceDiscoveryType === 'consul') {
                 this.template(
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstConsulCustomizer.java.ejs`,
                     `${javaDir}config/apidocs/ApiFirstConsulCustomizer.java`
@@ -142,7 +171,7 @@ module.exports = class extends BaseGenerator {
                     `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
                     `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
                 )
-            } else if(this.serviceDiscoveryType == 'eureka'){
+            } else if (this.serviceDiscoveryType == 'eureka') {
                 this.template(
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstEurekaCustomizer.java.ejs`,
                     `${javaDir}config/apidocs/ApiFirstEurekaCustomizer.java`
@@ -150,7 +179,7 @@ module.exports = class extends BaseGenerator {
             }
         }
 
-        if(this.props.swaggerUi3){
+        if (this.swaggerUi3) {
 
             //settings vars needed by webpack-common.js template
             if (this.enableTranslation === undefined) {
@@ -162,26 +191,26 @@ module.exports = class extends BaseGenerator {
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
             )
-    
+
             this.template(
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
             )
-    
-            if(this.clientFramework === 'angularX') {
+
+            if (this.clientFramework === 'angularX') {
                 this.template(
                     `angular/webpack/webpack-common.js.ext.ejs`,
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
                 )
-            } else if(this.clientFramework === 'react') {
+            } else if (this.clientFramework === 'react') {
                 this.template(
                     `react/webpack-common.js.ext.ejs`,
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
                 )
             }
-    
+
         }
-       
+
     }
 
     install() {
@@ -208,17 +237,17 @@ module.exports = class extends BaseGenerator {
         };
 
         const packageJson = require(this.destinationPath("package.json"))
-        
-        if(this.props.swaggerUi3){
-            if(installConfig.npm){
+
+        if (this.swaggerUi3) {
+            if (installConfig.npm) {
                 this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
                 this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
-            } else if (installConfig.yarn){
+            } else if (installConfig.yarn) {
                 this.spawnCommand('yarn', ['install', '--save', 'swagger-ui-dist']);
                 this.spawnCommand('yarn', ['uninstall', '--save', 'swagger-ui']);
             }
         }
-        
+
 
         if (this.options['skip-install']) {
             this.log(logMsg);
