@@ -174,10 +174,12 @@ module.exports = class extends BaseGenerator {
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstConsulCustomizer.java.ejs`,
                     `${javaDir}config/apidocs/ApiFirstConsulCustomizer.java`
                 )
-                this.template(
-                    `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
-                    `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
-                )
+                if(this.addFabioTags){
+                    this.template(
+                        `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
+                        `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
+                    )
+                }
             } else if (this.serviceDiscoveryType == 'eureka') {
                 this.template(
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstEurekaCustomizer.java.ejs`,

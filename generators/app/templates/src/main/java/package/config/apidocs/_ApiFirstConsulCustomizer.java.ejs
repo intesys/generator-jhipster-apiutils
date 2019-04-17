@@ -26,12 +26,14 @@ public class ApiFirstConsulCustomizer {
             }
             tags.add("api=" + openApiService.getApiVersion());
 
+            <%_ if (addFabioTags) { _%>
             //fabio upstream rules
             String apiFirstPath = "/" + appName + "/api/v" + openApiService.getApiVersion();
             tags.add(String.format("urlprefix-%s strip=%s", apiFirstPath, apiFirstPath));
 
             String buidVersionPath = "/" + appName + "/v" + buildProperties.getVersion();
             tags.add(String.format("urlprefix-%s strip=%s", buidVersionPath, buidVersionPath));
+            <%_ } _%>
         };
     }
 }
