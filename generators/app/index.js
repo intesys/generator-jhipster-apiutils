@@ -33,6 +33,13 @@ module.exports = class extends BaseGenerator {
                 if (!semver.satisfies(currentJhipsterVersion, minimumJhipsterVersion)) {
                     this.warning(`\nYour generated project used an old JHipster version (${currentJhipsterVersion})... you need at least (${minimumJhipsterVersion})\n`);
                 }
+            },
+            checkSwaggerEnabled() {
+                if(!this.jhipsterAppConfig.enableSwaggerCodegen){
+                    this.error('Can\'t use this module without enabling swagger codegen. Please edit your .yo-rc.json file and set enableSwaggerCodegen to true');
+                    done();
+                    return;
+                }   
             }
         };
     }
