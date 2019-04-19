@@ -1,4 +1,4 @@
-# generator-jhipster-apifirst
+# generator-jhipster-apiutils
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 > JHipster module, A Jhipster module for API first development
 
@@ -19,13 +19,13 @@ As this is a [JHipster](http://jhipster.github.io/) module, we expect you have J
 To install this module:
 
 ```bash
-yarn global add generator-jhipster-apifirst
+yarn global add generator-jhipster-apiutils
 ```
 
 To update this module:
 
 ```bash
-yarn global upgrade generator-jhipster-apifirst
+yarn global upgrade generator-jhipster-apiutils
 ```
 
 ## With NPM
@@ -33,13 +33,13 @@ yarn global upgrade generator-jhipster-apifirst
 To install this module:
 
 ```bash
-npm install -g generator-jhipster-apifirst
+npm install -g generator-jhipster-apiutils
 ```
 
 To update this module:
 
 ```bash
-npm update -g generator-jhipster-apifirst
+npm update -g generator-jhipster-apiutils
 ```
 
 # Usage
@@ -49,9 +49,9 @@ npm update -g generator-jhipster-apifirst
 Apache-2.0 © [Enrico Costanzi]()
 
 
-[npm-image]: https://img.shields.io/npm/v/generator-jhipster-apifirst.svg
-[npm-url]: https://npmjs.org/package/generator-jhipster-apifirst
-[travis-image]: https://travis-ci.org/ecostanzi/generator-jhipster-apifirst.svg?branch=master
-[travis-url]: https://travis-ci.org/ecostanzi/generator-jhipster-apifirst
-[daviddm-image]: https://david-dm.org/ecostanzi/generator-jhipster-apifirst.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/ecostanzi/generator-jhipster-apifirst
+[npm-image]: https://img.shields.io/npm/v/generator-jhipster-apiutils.svg
+[npm-url]: https://npmjs.org/package/generator-jhipster-apiutils
+[travis-image]: https://travis-ci.org/ecostanzi/generator-jhipster-apiutils.svg?branch=master
+[travis-url]: https://travis-ci.org/ecostanzi/generator-jhipster-apiutils
+[daviddm-image]: https://david-dm.org/ecostanzi/generator-jhipster-apiutils.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/ecostanzi/generator-jhipster-apiutils

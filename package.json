@@ -1,5 +1,5 @@
 {
-  "name": "generator-jhipster-apifirst",
+  "name": "generator-jhipster-apiutils",
   "version": "0.0.0",
   "description": "A Jhipster module for API first development",
   "keywords": [
@@ -7,7 +7,7 @@
     "jhipster-module",
     "jhipster-5"
   ],
-  "homepage": "https://github.com/ecostanzi/generator-jhipster-apifirst",
+  "homepage": "https://github.com/ecostanzi/generator-jhipster-apiutils",
   "author": {
     "name": "Enrico Costanzi",
     "email": "enrico.costanzi@gmail.com",
@@ -19,7 +19,7 @@
   "main": "generators/app/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ecostanzi/generator-jhipster-apifirst.git"
+    "url": "git+https://github.com/ecostanzi/generator-jhipster-apiutils.git"
   },
   "dependencies": {
     "chalk": "2.4.1",
@@ -51,6 +51,6 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ecostanzi/generator-jhipster-apifirst/issues"
+    "url": "https://github.com/ecostanzi/generator-jhipster-apiutils/issues"
   }
 }

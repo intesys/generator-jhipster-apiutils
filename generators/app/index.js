@@ -25,7 +25,7 @@ module.exports = class extends BaseGenerator {
                 this.printJHipsterLogo();
 
                 // Have Yeoman greet the user.
-                this.log(`\nWelcome to the ${chalk.bold.yellow('JHipster apifirst')} generator! ${chalk.yellow(`v${packagejs.version}\n`)}`);
+                this.log(`\nWelcome to the ${chalk.bold.yellow('JHipster apiutils')} generator! ${chalk.yellow(`v${packagejs.version}\n`)}`);
             },
             checkJhipster() {
                 const currentJhipsterVersion = this.jhipsterAppConfig.jhipsterVersion;
@@ -266,6 +266,6 @@ module.exports = class extends BaseGenerator {
     }
 
     end() {
-        this.log('End of apifirst generator');
+        this.log('End of apiutils generator');
     }
 };

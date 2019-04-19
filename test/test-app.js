@@ -5,7 +5,7 @@ const fse = require('fs-extra');
 const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 
-describe('JHipster generator apifirst', () => {
+describe('JHipster generator apiutils', () => {
     describe('Test with Maven and AngularX', () => {
         beforeEach((done) => {
             helpers
