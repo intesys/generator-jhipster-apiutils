@@ -14,13 +14,15 @@ import java.io.IOException;
 @Service
 public class OpenApiService {
 
+    public static final String OPENAPI_SPEC_FILE = "api.yml";
+
     private final ObjectMapper ymlObjectMapper = new ObjectMapper(new YAMLFactory());
 
     private final JsonNode ymlJsonNode;
 
     public OpenApiService() {
         try {
-            ClassPathResource classPathResource = new ClassPathResource("swagger/api.yml");
+            ClassPathResource classPathResource = new ClassPathResource("swagger/" + OPENAPI_SPEC_FILE);
             byte[] ymlContent = IOUtils.toByteArray(classPathResource.getInputStream());
             ymlJsonNode = ymlObjectMapper.readTree(ymlContent);
         } catch (Exception e){

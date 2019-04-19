@@ -78,7 +78,6 @@ module.exports = class extends BaseGenerator {
                 const done = this.async();
                 
                 this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
-                console.log(`${this.serviceDiscoveryType}`)
                 const prompts = [{
                     when: this.serviceDiscoveryType === 'consul' || this.addServiceDiscoveryTag === true,
                     type: 'confirm',
@@ -154,13 +153,17 @@ module.exports = class extends BaseGenerator {
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstResourceProvider.java.ejs`,
             `${javaDir}config/apidocs/ApiFirstResourceProvider.java`
         )
+        this.template(
+            `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiVersionContributor.java.ejs`,
+            `${javaDir}config/apidocs/ApiVersionContributor.java`
+        )
 
         if (this.buildTool === 'maven') {
             this.addMavenProperty("jackson.version", "2.9.8");
             this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
             this.rewriteFile('pom.xml',
                 '<delegatePattern>true</delegatePattern>',
-                `                                    <title>${this.dasherizedBaseName}</title>`
+                `<title>${this.dasherizedBaseName}</title>`
             );
         } else if (this.buildTool === 'gradle') {
             this.addGradleProperty("jackson.version", "2.9.8");

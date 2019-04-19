@@ -41,8 +41,8 @@ public class ApiFirstResourceProvider extends InMemorySwaggerResourcesProvider i
 
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName("openapi");
-        swaggerResource.setUrl(basePath + "/api.yml");
-        swaggerResource.setLocation(basePath + "/api.yml");
+        swaggerResource.setUrl(basePath + "/" + OpenApiService.OPENAPI_SPEC_FILE);
+        swaggerResource.setLocation(basePath + "/" + OpenApiService.OPENAPI_SPEC_FILE);
         swaggerResource.setSwaggerVersion(openApiService.getSpecVersion());
         swaggerResources.add(swaggerResource);
 
