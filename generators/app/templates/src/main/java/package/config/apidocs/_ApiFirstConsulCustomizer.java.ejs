@@ -11,13 +11,14 @@ import <%=packageName%>.service.OpenApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class ApiFirstConsulCustomizer {
 
     @Bean
     @Primary
-    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService, BuildProperties buildProperties,
+    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService, Optional<BuildProperties> buildProperties,
                                                                   @Value("${spring.application.name}") String appName) {
         return registration -> {
             List<String> tags = registration.getService().getTags();
@@ -28,11 +29,16 @@ public class ApiFirstConsulCustomizer {
 
             <%_ if (addFabioTags) { _%>
             //fabio upstream rules
+            String appNamePath = "/" + appName;
+            tags.add(String.format("urlprefix-%s strip=%s", appNamePath, appNamePath));
+
             String apiFirstPath = "/" + appName + "/api/v" + openApiService.getApiVersion();
             tags.add(String.format("urlprefix-%s strip=%s", apiFirstPath, apiFirstPath));
 
-            String buidVersionPath = "/" + appName + "/v" + buildProperties.getVersion();
-            tags.add(String.format("urlprefix-%s strip=%s", buidVersionPath, buidVersionPath));
+            if(buildProperties.isPresent()){
+                String buidVersionPath = "/" + appName + "/v" + buildProperties.get().getVersion();
+                tags.add(String.format("urlprefix-%s strip=%s", buidVersionPath, buidVersionPath));
+            }
             <%_ } _%>
         };
     }
