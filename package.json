@@ -7,7 +7,7 @@
     "jhipster-module",
     "jhipster-5"
   ],
-  "homepage": "https://github.com/ecostanzi/generator-jhipster-apiutils",
+  "homepage": "https://github.com/intesys/generator-jhipster-apiutils",
   "author": {
     "name": "Enrico Costanzi",
     "email": "enrico.costanzi@gmail.com",
@@ -19,7 +19,7 @@
   "main": "generators/app/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ecostanzi/generator-jhipster-apiutils.git"
+    "url": "git+https://github.com/intesys/generator-jhipster-apiutils.git"
   },
   "dependencies": {
     "chalk": "2.4.1",
@@ -51,6 +51,6 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ecostanzi/generator-jhipster-apiutils/issues"
+    "url": "https://github.com/intesys/generator-jhipster-apiutils/issues"
   }
 }

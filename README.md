@@ -56,7 +56,7 @@ Apache-2.0 © [Enrico Costanzi]()
 
 [npm-image]: https://img.shields.io/npm/v/generator-jhipster-apiutils.svg
 [npm-url]: https://npmjs.org/package/generator-jhipster-apiutils
-[travis-image]: https://travis-ci.org/ecostanzi/generator-jhipster-apiutils.svg?branch=master
-[travis-url]: https://travis-ci.org/ecostanzi/generator-jhipster-apiutils
-[daviddm-image]: https://david-dm.org/ecostanzi/generator-jhipster-apiutils.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/ecostanzi/generator-jhipster-apiutils
+[travis-image]: https://travis-ci.org/intesys/generator-jhipster-apiutils.svg?branch=master
+[travis-url]: https://travis-ci.org/intesys/generator-jhipster-apiutils
+[daviddm-image]: https://david-dm.org/intesys/generator-jhipster-apiutils.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/intesys/generator-jhipster-apiutils
