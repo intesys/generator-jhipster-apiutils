@@ -1,7 +1,7 @@
 {
   "name": "generator-jhipster-apiutils",
   "version": "0.1.0",
-  "description": "A Jhipster module for API first development",
+  "description": "A Jhipster module with some utilities for api first development",
   "keywords": [
     "yeoman-generator",
     "jhipster-module",
