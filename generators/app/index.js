@@ -96,7 +96,7 @@ module.exports = class extends BaseGenerator {
                 const done = this.async();
 
                 const prompts = [{
-                    when: this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway',
+                    when: this.jhipsterAppConfig.authenticationType === 'jwt' && (this.jhipsterAppConfig.applicationType === 'monolith' || this.jhipsterAppConfig.applicationType === 'gateway'),
                     type: 'confirm',
                     name: 'swaggerUi3',
                     message: 'Do you want to upgrade swagger UI to version 3? (Beta - works only with JWT auth)',
@@ -197,7 +197,9 @@ module.exports = class extends BaseGenerator {
             if (this.enableTranslation === undefined) {
                 this.enableTranslation = true;
             }
+            this.CLIENT_MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
             this.MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
+            this.BUILD_DIR = this.getBuildDirectoryForBuildTool(this.buildTool);
 
             this.template(
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
@@ -211,12 +213,12 @@ module.exports = class extends BaseGenerator {
 
             if (this.clientFramework === 'angularX') {
                 this.template(
-                    `angular/webpack/webpack-common.js.ext.ejs`,
+                    'angular/webpack/webpack-common.js.ext.ejs',
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
                 )
             } else if (this.clientFramework === 'react') {
                 this.template(
-                    `react/webpack-common.js.ext.ejs`,
+                    'react/webpack/webpack-common.js.ext.ejs',
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
                 )
             }
