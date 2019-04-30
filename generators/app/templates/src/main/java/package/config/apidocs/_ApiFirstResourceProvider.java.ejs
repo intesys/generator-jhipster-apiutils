@@ -22,13 +22,10 @@ import java.util.List;
 public class ApiFirstResourceProvider extends InMemorySwaggerResourcesProvider implements SwaggerResourcesProvider {
 
     private final OpenApiService openApiService;
-    private final String basePath;
 
-    public ApiFirstResourceProvider(Environment environment, DocumentationCache documentationCache,
-                                    OpenApiService openApiService, @Value("<%=openApiBasePathProperty%>") String basePath) {
+    public ApiFirstResourceProvider(Environment environment, DocumentationCache documentationCache, OpenApiService openApiService) {
         super(environment, documentationCache);
         this.openApiService = openApiService;
-        this.basePath = basePath;
     }
 
     /**
@@ -41,8 +38,8 @@ public class ApiFirstResourceProvider extends InMemorySwaggerResourcesProvider i
 
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName("openapi");
-        swaggerResource.setUrl(basePath + "/" + OpenApiService.OPENAPI_SPEC_FILE);
-        swaggerResource.setLocation(basePath + "/" + OpenApiService.OPENAPI_SPEC_FILE);
+        swaggerResource.setUrl(openApiService.getSpecLocation());
+        swaggerResource.setLocation(openApiService.getSpecLocation());
         swaggerResource.setSwaggerVersion(openApiService.getSpecVersion());
         swaggerResources.add(swaggerResource);
 

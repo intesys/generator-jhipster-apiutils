@@ -20,11 +20,9 @@ import java.util.Map;
 public class ApiVersionContributor implements InfoContributor {
 
     private final OpenApiService openApiService;
-    private final String basePath;
 
-    public ApiVersionContributor(OpenApiService openApiService, @Value("<%=openApiBasePathProperty%>") String basePath) {
+    public ApiVersionContributor(OpenApiService openApiService) {
         this.openApiService = openApiService;
-        this.basePath = basePath;
     }
 
     @Override
@@ -32,7 +30,7 @@ public class ApiVersionContributor implements InfoContributor {
         Map<String, String> openapiInfo = new HashMap<>();
         openapiInfo.put("version", openApiService.getApiVersion());
         openapiInfo.put("specVersion", openApiService.getSpecVersion());
-        openapiInfo.put("path", basePath);
+        openapiInfo.put("location", openApiService.getSpecLocation());
         builder.withDetail("openapi", openapiInfo);
     }
 }

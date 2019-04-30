@@ -49,6 +49,10 @@ npm update -g generator-jhipster-apiutils
 
 # Usage
 
+```bash
+yo jhipster-apiutils
+```
+
 # License
 
 Apache-2.0 © [Enrico Costanzi]()
