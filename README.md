@@ -1,10 +1,15 @@
 # generator-jhipster-apiutils
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
-> JHipster module, A Jhipster module for API first development
+> A Jhipster module with some utilities for api first development
 
 # Introduction
 
-This is a [JHipster](http://jhipster.github.io/) module, that is meant to be used in a JHipster application.
+This is a [JHipster](http://jhipster.github.io/) module, that is meant to be used in a JHipster application. 
+Thanks to this module its possibile to:
+- when `enableSwaggerCodegen=true` the api.yml file can be served statically by a dedicated endpoint
+- add `api` to service discovery tags in order to expose api version
+- integration with [Fabio](https://fabiolb.net/) load balancer, when consul is enabled
+- replace swagger ui 2 with the new swagger ui 3 (BETA, works only with JWT authentication)
 
 # Prerequisites
 
