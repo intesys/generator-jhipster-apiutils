@@ -1,9 +1,9 @@
 const chalk = require('chalk');
-const packagejs = require('../../package.json');
 const semver = require('semver');
 const _ = require('lodash');
 const BaseGenerator = require('generator-jhipster/generators/generator-base');
 const jhipsterConstants = require('generator-jhipster/generators/generator-constants');
+const packagejs = require('../../package.json');
 
 module.exports = class extends BaseGenerator {
     get initializing() {
@@ -35,11 +35,11 @@ module.exports = class extends BaseGenerator {
                 }
             },
             checkSwaggerEnabled() {
-                if(!this.jhipsterAppConfig.enableSwaggerCodegen){
+                const done = this.async();
+                if (!this.jhipsterAppConfig.enableSwaggerCodegen) {
                     this.error('Can\'t use this module without enabling swagger codegen. Please edit your .yo-rc.json file and set enableSwaggerCodegen to true');
                     done();
-                    return;
-                }   
+                }
             }
         };
     }
@@ -48,25 +48,25 @@ module.exports = class extends BaseGenerator {
         return {
             askOpenApiPath: function askOpenApiPath() {
                 const done = this.async();
-                
+
                 this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
                 const prompts = [{
-                        type: 'input',
-                        name: 'openApiPath',
-                        message: 'Which api base path is used for openapi endpoint?',
-                        default: '/api/public',
-                        store: true
-                    },
-                    {
-                        when: this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka',
-                        type: 'confirm',
-                        name: 'addServiceDiscoveryTag',
-                        message: 'Do you want add version tags for service discovery?',
-                        default: false,
-                    }
+                    type: 'input',
+                    name: 'openApiPath',
+                    message: 'Which api base path is used for openapi endpoint?',
+                    default: '/api/public',
+                    store: true
+                },
+                {
+                    when: this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka',
+                    type: 'confirm',
+                    name: 'addServiceDiscoveryTag',
+                    message: 'Do you want add version tags for service discovery?',
+                    default: false,
+                }
                 ];
 
-                
+
                 this.prompt(prompts).then((props) => {
                     this.openApiPath = props.openApiPath;
                     this.addServiceDiscoveryTag = props.addServiceDiscoveryTag;
@@ -74,9 +74,9 @@ module.exports = class extends BaseGenerator {
                 });
             },
 
-            askFabioTags : function askFabioTags() {
+            askFabioTags: function askFabioTags() {
                 const done = this.async();
-                
+
                 this.serviceDiscoveryType = this.jhipsterAppConfig.serviceDiscoveryType;
                 const prompts = [{
                     when: this.serviceDiscoveryType === 'consul' || this.addServiceDiscoveryTag === true,
@@ -84,15 +84,15 @@ module.exports = class extends BaseGenerator {
                     name: 'addFabioTags',
                     message: 'Do you want add urlprefix tags for Fabio service discovery?',
                     default: false,
-                }]
-                
+                }];
+
                 this.prompt(prompts).then((props) => {
                     this.addFabioTags = props.addFabioTags;
                     done();
                 });
             },
 
-            askSwaggerUIUpgrade : function askSwaggerUIUpgrade() {
+            askSwaggerUIUpgrade: function askSwaggerUIUpgrade() {
                 const done = this.async();
 
                 const prompts = [{
@@ -101,14 +101,14 @@ module.exports = class extends BaseGenerator {
                     name: 'swaggerUi3',
                     message: 'Do you want to upgrade swagger UI to version 3? (Beta - works only with JWT auth)',
                     default: false,
-                }]
-                
+                }];
+
                 this.prompt(prompts).then((props) => {
                     this.swaggerUi3 = props.swaggerUi3;
                     done();
                 });
             }
-        }
+        };
     }
 
     writing() {
@@ -137,38 +137,37 @@ module.exports = class extends BaseGenerator {
         const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
 
         this.dasherizedBaseName = _.kebabCase(this.baseName);
-        this.openApiBasePathProperty = `\$\{openapi.${this.dasherizedBaseName}.base-path:${this.openApiPath}\}`;
+        this.openApiBasePathProperty = `$\{openapi.${this.dasherizedBaseName}.base-path:${this.openApiPath}}`;
 
         this.log(`\ngenerating api first files for api.yml exposed on public path ${this.openApiPath} or set on property ${this.openApiBasePathProperty}\n`);
 
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/web/_OpenApiController.java.ejs`,
             `${javaDir}web/OpenApiController.java`
-        )
+        );
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/service/_OpenApiService.java.ejs`,
             `${javaDir}service/OpenApiService.java`
-        )
+        );
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstResourceProvider.java.ejs`,
             `${javaDir}config/apidocs/ApiFirstResourceProvider.java`
-        )
+        );
         this.template(
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiVersionContributor.java.ejs`,
             `${javaDir}config/apidocs/ApiVersionContributor.java`
-        )
+        );
 
         if (this.buildTool === 'maven') {
-            this.addMavenProperty("jackson.version", "2.9.8");
-            this.addMavenDependencyInDirectory("", "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
+            this.addMavenProperty('jackson.version', '2.9.8');
+            this.addMavenDependencyInDirectory('', 'com.fasterxml.jackson.dataformat', 'jackson-dataformat-yaml', '${jackson.version}');
             this.rewriteFile('pom.xml',
                 '<delegatePattern>true</delegatePattern>',
-                `<title>${this.dasherizedBaseName}</title>`
-            );
+                `<title>${this.dasherizedBaseName}</title>`);
         } else if (this.buildTool === 'gradle') {
-            this.addGradleProperty("jackson.version", "2.9.8");
-            this.addGradleDependencyInDirectory("", 'compile', "com.fasterxml.jackson.dataformat", "jackson-dataformat-yaml", "${jackson.version}");
-            this.replaceContent('gradle/swagger.gradle', `delegatePattern: "true"`, `delegatePattern: "true", title: "${this.dasherizedBaseName}"`);
+            this.addGradleProperty('jackson_version', '2.9.8');
+            this.addGradleDependencyInDirectory('', 'compile', 'com.fasterxml.jackson.dataformat', 'jackson-dataformat-yaml', '${jackson_version}');
+            this.replaceContent('gradle/swagger.gradle', 'delegatePattern: "true"', `delegatePattern: "true", title: "${this.dasherizedBaseName}"`);
         }
 
         if (this.addServiceDiscoveryTag) {
@@ -176,24 +175,22 @@ module.exports = class extends BaseGenerator {
                 this.template(
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstConsulCustomizer.java.ejs`,
                     `${javaDir}config/apidocs/ApiFirstConsulCustomizer.java`
-                )
-                if(this.addFabioTags){
+                );
+                if (this.addFabioTags) {
                     this.template(
                         `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
                         `${jhipsterConstants.MAIN_DIR}docker/consul-fabio.yml`,
-                    )
+                    );
                 }
-            } else if (this.serviceDiscoveryType == 'eureka') {
+            } else if (this.serviceDiscoveryType === 'eureka') {
                 this.template(
                     `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiFirstEurekaCustomizer.java.ejs`,
                     `${javaDir}config/apidocs/ApiFirstEurekaCustomizer.java`
-                )
+                );
             }
         }
 
         if (this.swaggerUi3) {
-
-            //settings vars needed by webpack-common.js template
             if (this.enableTranslation === undefined) {
                 this.enableTranslation = true;
             }
@@ -204,36 +201,32 @@ module.exports = class extends BaseGenerator {
             this.template(
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
-            )
+            );
 
             this.template(
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`,
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/jquery-2.2.4.min.js`
-            )
+            );
 
             if (this.clientFramework === 'angularX') {
                 this.template(
                     'angular/webpack/webpack-common.js.ext.ejs',
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
-                )
+                );
             } else if (this.clientFramework === 'react') {
                 this.template(
                     'react/webpack/webpack-common.js.ext.ejs',
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
-                )
+                );
             }
-
         }
-
     }
 
     install() {
-        let logMsg =
-            `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install`)}`;
+        let logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install`)}`;
 
         if (this.clientFramework === 'angular1') {
-            logMsg =
-                `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install & bower install`)}`;
+            logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install & bower install`)}`;
         }
         const injectDependenciesAndConstants = (err) => {
             if (err) {
@@ -250,7 +243,7 @@ module.exports = class extends BaseGenerator {
             callback: injectDependenciesAndConstants
         };
 
-        const packageJson = require(this.destinationPath("package.json"))
+        const packageJson = require(this.destinationPath('package.json'));
 
         if (this.swaggerUi3) {
             if (installConfig.npm) {
