@@ -14,7 +14,11 @@ module.exports = class extends BaseGenerator {
                 }
             },
             readConfig() {
-                this.jhipsterAppConfig = this.getJhipsterAppConfig();
+                try {
+                    this.jhipsterAppConfig = this.getJhipsterAppConfig();
+                } catch (TypeError) {
+                    this.jhipsterAppConfig = this.getAllJhipsterConfig();
+                }
                 if (!this.jhipsterAppConfig) {
                     this.error('Can\'t read .yo-rc.json');
                 }
