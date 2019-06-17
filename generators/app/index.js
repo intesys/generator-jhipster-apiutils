@@ -189,6 +189,7 @@ module.exports = class extends BaseGenerator {
         }
 
         if (this.swaggerUi3) {
+            this.enableTranslation = this.jhipsterAppConfig.enableTranslation;
             if (this.enableTranslation === undefined) {
                 this.enableTranslation = true;
             }
