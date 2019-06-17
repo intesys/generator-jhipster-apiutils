@@ -57,8 +57,7 @@ module.exports = class extends BaseGenerator {
                     type: 'input',
                     name: 'openApiPath',
                     message: `Which api base path is used for openapi endpoint (can be overwritten using property openapi.${_.kebabCase(this.jhipsterAppConfig.baseName)}.base-path)?`,
-                    default: '/api',
-                    store: true
+                    default: '/api'
                 },
                 {
                     when: this.serviceDiscoveryType === 'consul' || this.serviceDiscoveryType === 'eureka',
