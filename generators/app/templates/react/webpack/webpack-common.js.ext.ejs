@@ -17,6 +17,7 @@
  limitations under the License.
 -%>
 const webpack = require('webpack');
+const { BaseHrefWebpackPlugin } = require('base-href-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -133,7 +134,9 @@ module.exports = options => ({
     }),
     new ForkTsCheckerWebpackPlugin({ tslint: true }),
     new CopyWebpackPlugin([
-      { from: './node_modules/swagger-ui-dist/*.{js,css,html,png}', to: 'swagger-ui', flatten: true, ignore: 'index.html'},
+      { from: './node_modules/swagger-ui/dist/css', to: 'swagger-ui/dist/css' },
+      { from: './node_modules/swagger-ui/dist/lib', to: 'swagger-ui/dist/lib' },
+      { from: './node_modules/swagger-ui/dist/swagger-ui.min.js', to: 'swagger-ui/dist/swagger-ui.min.js' },
       { from: './<%= MAIN_SRC_DIR %>/swagger-ui/', to: 'swagger-ui' },
       { from: './<%= MAIN_SRC_DIR %>static/', to: 'content' },
       { from: './<%= MAIN_SRC_DIR %>favicon.ico', to: 'favicon.ico' },
@@ -146,6 +149,7 @@ module.exports = options => ({
       chunksSortMode: 'dependency',
       inject: 'body'
     }),
+    new BaseHrefWebpackPlugin({ baseHref: '/' }),
     <%_ if (enableTranslation) { _%>
     new MergeJsonWebpackPlugin({
       output: {
