@@ -15,10 +15,11 @@ module.exports = class extends BaseGenerator {
             },
             readConfig() {
                 try {
-                    this.jhipsterAppConfig = this.getJhipsterAppConfig();
-                } catch (TypeError) {
                     this.jhipsterAppConfig = this.getAllJhipsterConfig();
+                } catch (TypeError) {
+                    this.jhipsterAppConfig = this.getJhipsterAppConfig();
                 }
+
                 if (!this.jhipsterAppConfig) {
                     this.error('Can\'t read .yo-rc.json');
                 }
@@ -39,10 +40,8 @@ module.exports = class extends BaseGenerator {
                 }
             },
             checkSwaggerEnabled() {
-                const done = this.async();
                 if (!this.jhipsterAppConfig.enableSwaggerCodegen) {
                     this.error('Can\'t use this module without enabling swagger codegen. Please edit your .yo-rc.json file and set enableSwaggerCodegen to true');
-                    done();
                 }
             }
         };
