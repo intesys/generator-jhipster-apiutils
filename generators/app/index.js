@@ -159,6 +159,10 @@ module.exports = class extends BaseGenerator {
             `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_ApiVersionContributor.java.ejs`,
             `${javaDir}config/apidocs/ApiVersionContributor.java`
         );
+        this.template(
+            `${jhipsterConstants.SERVER_MAIN_SRC_DIR}package/config/apidocs/_OpenApiSecurityConfig.java.ejs`,
+            `${javaDir}config/apidocs/OpenApiSecurityConfig.java`
+        );
 
         if (this.buildTool === 'maven') {
             this.addMavenProperty('jackson.version', '2.9.8');
@@ -218,21 +222,18 @@ module.exports = class extends BaseGenerator {
                     `${jhipsterConstants.CLIENT_WEBPACK_DIR}/webpack.common.js`
                 );
             }
+
+            this.replaceContent('package.json', '"swagger-ui": "2.2.10"', '"swagger-ui-dist": "3.22.3"');
         }
     }
 
     install() {
-        let logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install`)}`;
+        const logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install`)}`;
 
-        if (this.clientFramework === 'angular1') {
-            logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install & bower install`)}`;
-        }
         const injectDependenciesAndConstants = (err) => {
             if (err) {
                 this.warning('Install of dependencies failed!');
                 this.log(logMsg);
-            } else if (this.clientFramework === 'angular1') {
-                this.spawnCommand('gulp', ['install']);
             }
         };
         const installConfig = {
@@ -241,17 +242,6 @@ module.exports = class extends BaseGenerator {
             yarn: this.clientPackageManager === 'yarn',
             callback: injectDependenciesAndConstants
         };
-
-        if (this.swaggerUi3) {
-            if (installConfig.npm) {
-                this.spawnCommand('npm', ['install', '--save', 'swagger-ui-dist']);
-                this.spawnCommand('npm', ['uninstall', '--save', 'swagger-ui']);
-            } else if (installConfig.yarn) {
-                this.spawnCommand('yarn', ['install', '--save', 'swagger-ui-dist']);
-                this.spawnCommand('yarn', ['uninstall', '--save', 'swagger-ui']);
-            }
-        }
-
 
         if (this.options['skip-install']) {
             this.log(logMsg);
