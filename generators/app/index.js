@@ -56,8 +56,8 @@ module.exports = class extends BaseGenerator {
                 const prompts = [{
                     type: 'input',
                     name: 'openApiPath',
-                    message: 'Which api base path is used for openapi endpoint?',
-                    default: '/api/public',
+                    message: `Which api base path is used for openapi endpoint (can be overwritten using property openapi.${_.kebabCase(this.jhipsterAppConfig.baseName)}.base-path)?`,
+                    default: '/api',
                     store: true
                 },
                 {
@@ -164,13 +164,9 @@ module.exports = class extends BaseGenerator {
         if (this.buildTool === 'maven') {
             this.addMavenProperty('jackson.version', '2.9.8');
             this.addMavenDependencyInDirectory('', 'com.fasterxml.jackson.dataformat', 'jackson-dataformat-yaml', '${jackson.version}');
-            this.rewriteFile('pom.xml',
-                '<delegatePattern>true</delegatePattern>',
-                `<title>${this.dasherizedBaseName}</title>`);
         } else if (this.buildTool === 'gradle') {
             this.addGradleProperty('jackson_version', '2.9.8');
             this.addGradleDependencyInDirectory('', 'compile', 'com.fasterxml.jackson.dataformat', 'jackson-dataformat-yaml', '${jackson_version}');
-            this.replaceContent('gradle/swagger.gradle', 'delegatePattern: "true"', `delegatePattern: "true", title: "${this.dasherizedBaseName}"`);
         }
 
         if (this.addServiceDiscoveryTag) {
@@ -245,8 +241,6 @@ module.exports = class extends BaseGenerator {
             yarn: this.clientPackageManager === 'yarn',
             callback: injectDependenciesAndConstants
         };
-
-        const packageJson = require(this.destinationPath('package.json'));
 
         if (this.swaggerUi3) {
             if (installConfig.npm) {
