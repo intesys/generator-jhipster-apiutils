@@ -37,14 +37,14 @@
 
 <script>
     window.onload = function () {
-        let urls = [];
+        var urls = [];
         jQuery.getJSON("/swagger-resources", function (data) {
             $.each(data, function (i, resource) {
                 urls.push({"name": resource.name, "url": resource.location});
             });
 
             // Build a system
-            const ui = SwaggerUIBundle({
+            var ui = SwaggerUIBundle({
                 urls: urls,
                 dom_id: '#swagger-ui',
                 deepLinking: true,
