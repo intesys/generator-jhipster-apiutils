@@ -1,6 +1,5 @@
 package <%=packageName%>.config.apidocs;
 
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistrationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -11,14 +10,13 @@ import <%=packageName%>.service.OpenApiService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Configuration
 public class ApiFirstConsulCustomizer {
 
     @Bean
     @Primary
-    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService, Optional<BuildProperties> buildProperties,
+    public ConsulRegistrationCustomizer apiFirstServiceCustomizer(OpenApiService openApiService,
                                                                   @Value("${spring.application.name}") String appName) {
         return registration -> {
             List<String> tags = registration.getService().getTags();
@@ -32,13 +30,9 @@ public class ApiFirstConsulCustomizer {
             String appNamePath = "/" + appName;
             tags.add(String.format("urlprefix-%s strip=%s", appNamePath, appNamePath));
 
-            String apiFirstPath = "/" + appName + "/api/v" + openApiService.getApiVersion();
+            String apiFirstPath = "/" + appName + "/api/v" + openApiService.getApiVersion().split("\\.")[0];
             tags.add(String.format("urlprefix-%s strip=%s", apiFirstPath, apiFirstPath));
 
-            if(buildProperties.isPresent()){
-                String buidVersionPath = "/" + appName + "/v" + buildProperties.get().getVersion();
-                tags.add(String.format("urlprefix-%s strip=%s", buidVersionPath, buidVersionPath));
-            }
             <%_ } _%>
         };
     }
