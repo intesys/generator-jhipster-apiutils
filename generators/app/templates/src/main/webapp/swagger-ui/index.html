@@ -58,9 +58,8 @@
                 ],
                 layout: "StandaloneLayout",
                 onComplete: function(){
-                    var authToken = JSON.parse(localStorage.getItem("jhi-authenticationToken") || sessionStorage.getItem("jhi-authenticationToken"));
-                    if(authToken){
-                        console.log("preauthorizing "+ authToken);
+                    var authToken = JSON.parse(localStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken") || sessionStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken"));
+                    if(authToken) {
                         ui.preauthorizeApiKey("Bearer", "Bearer " +  authToken)
                     }
                 }

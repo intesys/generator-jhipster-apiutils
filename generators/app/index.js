@@ -201,6 +201,8 @@ module.exports = class extends BaseGenerator {
             this.MAIN_SRC_DIR = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
             this.BUILD_DIR = this.getBuildDirectoryForBuildTool(this.buildTool);
 
+            this.jhiPrefixDashed = _.kebabCase(this.jhipsterAppConfig.jhiPrefix);
+
             this.template(
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`,
                 `${jhipsterConstants.CLIENT_MAIN_SRC_DIR}swagger-ui/index.html`
