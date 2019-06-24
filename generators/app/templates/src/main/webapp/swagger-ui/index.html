@@ -36,13 +36,12 @@
 
 
 <script>
-    var urls = [];
-    jQuery.getJSON("/swagger-resources", function (data) {
-        $.each(data, function (i, resource) {
-            urls.push({"name": resource.name, "url": resource.location});
-        });
-
-        window.onload = function () {
+    window.onload = function () {
+        let urls = [];
+        jQuery.getJSON("/swagger-resources", function (data) {
+            $.each(data, function (i, resource) {
+                urls.push({"name": resource.name, "url": resource.location});
+            });
 
             // Build a system
             const ui = SwaggerUIBundle({
@@ -57,17 +56,17 @@
                     SwaggerUIBundle.plugins.DownloadUrl
                 ],
                 layout: "StandaloneLayout",
-                onComplete: function(){
+                onComplete: function () {
                     var authToken = JSON.parse(localStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken") || sessionStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken"));
-                    if(authToken) {
+                    if (authToken) {
                         ui.preauthorizeApiKey("jwt", authToken)
                     }
                 }
             });
 
             window.ui = ui
-        };
-    });
+        });
+    };
 </script>
 </body>
 </html>
