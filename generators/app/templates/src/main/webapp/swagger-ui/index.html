@@ -60,7 +60,7 @@
                 onComplete: function(){
                     var authToken = JSON.parse(localStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken") || sessionStorage.getItem("<%=jhiPrefixDashed %>-authenticationtoken"));
                     if(authToken) {
-                        ui.preauthorizeApiKey("Bearer", "Bearer " +  authToken)
+                        ui.preauthorizeApiKey("jwt", authToken)
                     }
                 }
             });
